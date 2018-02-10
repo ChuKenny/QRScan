@@ -8,6 +8,8 @@
 
 #import "QRScanViewController.h"
 #define KTOPHEIGHT 100
+#define KALPHA_HEIGHT 50
+#define kALPHA_WIDTH 220
 #define IOS_7                   (([[[UIDevice currentDevice] systemVersion] floatValue] >= 7.0)? (YES):(NO))
 #define SCREEN_WIDTH            [UIScreen mainScreen].bounds.size.width
 #define SCREEN_HEIGHT            ([UIScreen mainScreen].bounds.size.height)
@@ -50,14 +52,18 @@
     [self.output setMetadataObjectsDelegate:self queue:dispatch_get_main_queue()];
     [self.output setMetadataObjectTypes:@[//AVMetadataObjectTypeQRCode,//二维码
                                           //以下为条形码，如果项目只需要扫描条形码，下面都不要写
-                                          AVMetadataObjectTypeEAN13Code,
-                                          AVMetadataObjectTypeEAN8Code,
-                                          AVMetadataObjectTypeUPCECode,
-                                          AVMetadataObjectTypeCode39Code,
-                                          AVMetadataObjectTypeCode39Mod43Code,
-                                          AVMetadataObjectTypeCode93Code,
-                                          AVMetadataObjectTypeCode128Code,
-                                          AVMetadataObjectTypePDF417Code
+//                                          AVMetadataObjectTypeEAN13Code,
+//                                          AVMetadataObjectTypeEAN8Code,
+//                                          AVMetadataObjectTypeUPCECode,
+                                          AVMetadataObjectTypeCode39Code,//*
+//                                          AVMetadataObjectTypeCode39Mod43Code,
+//                                          AVMetadataObjectTypeCode93Code,
+//                                          AVMetadataObjectTypeCode128Code,
+//                                          AVMetadataObjectTypePDF417Code,
+//                                          AVMetadataObjectTypeDataMatrixCode,
+//                                          AVMetadataObjectTypeAztecCode,
+//                                          AVMetadataObjectTypeInterleaved2of5Code,
+//                                          AVMetadataObjectTypeITF14Code,                                          
                                           ]];
     //预览图层
     self.previewLayer = [AVCaptureVideoPreviewLayer layerWithSession:self.session];
@@ -93,7 +99,7 @@
 }
 
 - (void)addImage {
-    CGRect rect = CGRectMake((SCREEN_WIDTH-220)/2, KTOPHEIGHT, 220, 220);
+    CGRect rect = CGRectMake((SCREEN_WIDTH-kALPHA_WIDTH)/2, KTOPHEIGHT, kALPHA_WIDTH, KALPHA_HEIGHT);
     UIGraphicsBeginImageContext(self.imgview.frame.size);
     [[UIColor colorWithWhite:0 alpha:0.5] set];
     UIRectFill(self.view.bounds);
@@ -102,8 +108,8 @@
     [[UIColor whiteColor] setStroke];
     UIRectFrame(rect);
     
-    NSString *str = @"将二维码放到框内，即可自动扫描";
-    CGRect rect1 = CGRectMake((SCREEN_WIDTH-220)/2, KTOPHEIGHT+220+10, 220, 220);
+    NSString *str = @"将条形码放到框内，即可自动扫描";
+    CGRect rect1 = CGRectMake((SCREEN_WIDTH-kALPHA_WIDTH)/2, KTOPHEIGHT+KALPHA_HEIGHT+10, kALPHA_WIDTH, kALPHA_WIDTH);
     NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc]init];
     style.alignment = NSTextAlignmentCenter;
     [str drawInRect:rect1 withAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:[UIColor whiteColor], NSParagraphStyleAttributeName:style}];
@@ -116,7 +122,7 @@
 
 #pragma mark - 扫描动画
 - (void)addDrawLine {
-    self.imgLine = [[UIImageView alloc]initWithFrame:CGRectMake((SCREEN_WIDTH - 220) / 2, KTOPHEIGHT, 220, 1)];
+    self.imgLine = [[UIImageView alloc]initWithFrame:CGRectMake((SCREEN_WIDTH - kALPHA_WIDTH) / 2, KTOPHEIGHT, kALPHA_WIDTH, 1)];
     [_imgLine setBackgroundColor:[UIColor greenColor]];
     [self.view addSubview:_imgLine];
     
@@ -124,9 +130,9 @@
 }
 
 - (void)runDrawLine:(UIView *)imgview {
-    imgview.frame = CGRectMake((SCREEN_WIDTH - 220) / 2, KTOPHEIGHT, 220, 1);
+    imgview.frame = CGRectMake((SCREEN_WIDTH - kALPHA_WIDTH) / 2, KTOPHEIGHT, 1, KALPHA_HEIGHT);
     [UIView animateWithDuration:3.0 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
-        imgview.frame = CGRectMake((SCREEN_WIDTH - 220) / 2, KTOPHEIGHT + 220, 220, 1);
+        imgview.frame = CGRectMake((SCREEN_WIDTH - kALPHA_WIDTH) / 2 + kALPHA_WIDTH, KTOPHEIGHT, 1, KALPHA_HEIGHT);
     } completion:^(BOOL finished) {
         [self runDrawLine:imgview];
     }];
